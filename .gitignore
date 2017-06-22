@@ -101,4 +101,4 @@ ENV/
 .mypy_cache/
 .DS_Store
 .idea/
-get_des_scrapy/
+#get_des_scrapy/
