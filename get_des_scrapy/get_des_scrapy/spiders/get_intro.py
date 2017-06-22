@@ -29,7 +29,7 @@ class GetDesScrapySpider(scrapy.Spider):
 		第五台机器 id > 1000000 and id <= 1250000
 		第六台机器 id > 1250000
 		"""
-		select_sql = """select id, quan_cheng from tyc_jichu_bj where id > 1250000"""
+		select_sql = """select id, quan_cheng from tyc_jichu_bj where id > 1000000 and id <= 1250000"""
 		self.cursor.execute(select_sql)
 		results = self.cursor.fetchall() #元组包含元组或者空元组
 
