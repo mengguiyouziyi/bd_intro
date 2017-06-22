@@ -14,14 +14,22 @@ class GetDesScrapySpider(scrapy.Spider):
 	start_url = 'https://www.baidu.com/s?q1=&q2=%s&q3=&q4=&gpc=stf&ft=&q5=1&q6=&tn=baiduadv'
 
 	def __init__(self):
-		# self.conn = pymysql.connect(host='127.0.0.1', user='root', passwd='3646287', db='spiders', charset="utf8", use_unicode=True)
+		self.conn = pymysql.connect(host='127.0.0.1', user='root', passwd='3646287', db='spiders', charset="utf8", use_unicode=True)
 		# self.conn = pymysql.connect(host='101.200.166.12', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
-		self.conn = pymysql.connect(host='10.44.60.141', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
+		# self.conn = pymysql.connect(host='10.44.60.141', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
 		self.cursor = self.conn.cursor()
 		self.ua = UserAgent()
 
 	def start_requests(self):
-		select_sql = """select id, quan_cheng from tyc_jichu_bj where id < 200000"""
+		"""
+		第一台机器 id > 1916 and id <= 250000
+		第二台机器 id > 250000 and id <= 500000
+		第三台机器 id > 500000 and id <= 750000
+		第四台机器 id > 750000 and id <= 1000000
+		第五台机器 id > 1000000 and id <= 1250000
+		第六台机器 id > 1250000
+		"""
+		select_sql = """select id, quan_cheng from tyc_jichu_bj where id > 1916 and id <= 250000"""
 		self.cursor.execute(select_sql)
 		results = self.cursor.fetchall() #元组包含元组或者空元组
 
@@ -76,7 +84,7 @@ class GetDesScrapySpider(scrapy.Spider):
 		'''
 		intro_item = response.meta['intro_item']
 		id = intro_item['id']
-
+		# self.logger.info(response.url)
 		# 获取site，如果每个站点都没有，则跳过这个company了
 		url = response.xpath('//div[@id="bd_snap_note"]//a//@href|.//*[@id="bd_snap_txt"]/a//@href').extract_first(
 			default='')
