@@ -8,6 +8,14 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+import os
+import sys
+from os.path import dirname
+
+base_path = dirname(dirname(os.path.abspath(os.path.dirname(__file__))))
+path = dirname(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(path)
+sys.path.append(base_path)
 
 BOT_NAME = 'get_des_scrapy'
 

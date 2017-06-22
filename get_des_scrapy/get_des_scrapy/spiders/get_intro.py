@@ -14,13 +14,14 @@ class GetDesScrapySpider(scrapy.Spider):
 	start_url = 'https://www.baidu.com/s?q1=&q2=%s&q3=&q4=&gpc=stf&ft=&q5=1&q6=&tn=baiduadv'
 
 	def __init__(self):
-		self.conn = pymysql.connect(host='127.0.0.1', user='root', passwd='3646287', db='spiders', charset="utf8", use_unicode=True)
+		# self.conn = pymysql.connect(host='127.0.0.1', user='root', passwd='3646287', db='spiders', charset="utf8", use_unicode=True)
 		# self.conn = pymysql.connect(host='101.200.166.12', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
+		self.conn = pymysql.connect(host='10.44.60.141', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
 		self.cursor = self.conn.cursor()
 		self.ua = UserAgent()
 
 	def start_requests(self):
-		select_sql = """select id, quan_cheng from tyc_jichu_bj where id < 1000"""
+		select_sql = """select id, quan_cheng from tyc_jichu_bj where id < 200000"""
 		self.cursor.execute(select_sql)
 		results = self.cursor.fetchall() #元组包含元组或者空元组
 
