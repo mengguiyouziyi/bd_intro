@@ -14,9 +14,9 @@ class GetDesScrapySpider(scrapy.Spider):
 	start_url = 'https://www.baidu.com/s?q1=&q2=%s&q3=&q4=&gpc=stf&ft=&q5=1&q6=&tn=baiduadv'
 
 	def __init__(self):
-		self.conn = pymysql.connect(host='etl2.innotree.org', port=3308, user='spider', passwd='spider', db='tyc', charset="utf8", use_unicode=True)
+		self.conn = pymysql.connect(host='etl1.innotree.org', port=3308, user='spider', passwd='spider', db='tyc', charset="utf8", use_unicode=True)
 		self.cursor = self.conn.cursor()
-		self.conn1 = pymysql.connect(host='etl2.innotree.org', port=3308, user='spider', passwd='spider', db='spider',
+		self.conn1 = pymysql.connect(host='etl1.innotree.org', port=3308, user='spider', passwd='spider', db='spider',
 		                            charset="utf8", use_unicode=True)
 		self.cursor1 = self.conn1.cursor()
 		# self.ua = UserAgent()
