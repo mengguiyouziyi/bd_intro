@@ -18,3 +18,5 @@ p = Pool(processes=3)
 p.apply_async(main())
 p.close()
 p.join()
+# if __name__ == '__main__':
+# 	execute(["scrapy", "crawl", "get_intro"])

@@ -4,7 +4,7 @@ import re
 
 import scrapy
 import pymysql
-from fake_useragent import UserAgent
+# from fake_useragent import UserAgent
 
 from get_des_scrapy.items import IntroItem
 
@@ -14,11 +14,12 @@ class GetDesScrapySpider(scrapy.Spider):
 	start_url = 'https://www.baidu.com/s?q1=&q2=%s&q3=&q4=&gpc=stf&ft=&q5=1&q6=&tn=baiduadv'
 
 	def __init__(self):
-		# self.conn = pymysql.connect(host='127.0.0.1', user='root', passwd='3646287', db='spiders', charset="utf8", use_unicode=True)
-		# self.conn = pymysql.connect(host='101.200.166.12', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
-		self.conn = pymysql.connect(host='10.44.60.141', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
+		self.conn = pymysql.connect(host='etl2.innotree.org', port=3308, user='spider', passwd='spider', db='tyc', charset="utf8", use_unicode=True)
 		self.cursor = self.conn.cursor()
-		self.ua = UserAgent()
+		self.conn1 = pymysql.connect(host='etl2.innotree.org', port=3308, user='spider', passwd='spider', db='spider',
+		                            charset="utf8", use_unicode=True)
+		self.cursor1 = self.conn1.cursor()
+		# self.ua = UserAgent()
 
 	def start_requests(self):
 		"""
@@ -29,21 +30,22 @@ class GetDesScrapySpider(scrapy.Spider):
 		第五台机器 id > 1000000 and id <= 1250000
 		第六台机器 id > 1250000
 		"""
-		select_sql = """select id, quan_cheng from tyc_jichu_bj where id > 750000 and id <= 1000000"""
+		select_sql = """select id, comp_name from tyc_bl"""
 		self.cursor.execute(select_sql)
 		results = self.cursor.fetchall() #元组包含元组或者空元组
 
 		headers = {
 			'Host': 'www.baidu.com',
-			'User-Agent': self.ua.random,
+			# 'User-Agent': self.ua.random,
+			'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
 		}
 		for result in results:
 			intro_item = IntroItem()
 			id = result[0]
-			quan_cheng = result[1]
+			comp_name = result[1]
 			intro_item['id'] = id
-			intro_item['quan_cheng'] = quan_cheng
-			url = self.start_url % quan_cheng
+			intro_item['quan_cheng'] = comp_name
+			url = self.start_url % comp_name
 			yield scrapy.Request(url, headers=headers, callback=self.parse, meta={'intro_item': intro_item})
 
 	def parse(self, response):
@@ -56,7 +58,7 @@ class GetDesScrapySpider(scrapy.Spider):
 		headers = {
 			'Host': 'cache.baiducontent.com',
 			'Referer': 'https://www.baidu.com/s?q1=&q2=%E7%A6%8F%E5%BB%BA%E5%A4%A7%E6%96%B9%E7%9D%A1%E7%9C%A0%E7%A7%91%E6%8A%80%E8%82%A1%E4%BB%BD%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8&q3=&q4=&gpc=stf&ft=&q5=1&q6=&tn=baiduadv',
-			'User-Agent': self.ua.random,
+			'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
 		}
 		cache_obj = response.xpath('//div[@class="f13"]//a[@class="m"]')
 		cache_urls_other = cache_obj.xpath('./@href').extract()
@@ -69,7 +71,7 @@ class GetDesScrapySpider(scrapy.Spider):
 				# 如果匹配出了这个out_site_obj，就去site_xpath中查询，不在则return，在则发出请求
 				out_site = out_site_obj.group(1)
 				site_sql = """select site from bd_intro_xpath where site = %s"""
-				self.cursor.execute(site_sql, out_site)
+				self.cursor1.execute(site_sql, out_site)
 				result = self.cursor.fetchone()
 				if not result:
 					continue
@@ -98,17 +100,17 @@ class GetDesScrapySpider(scrapy.Spider):
 		site = site_obj.group(1)
 
 		# 判断此site是否在bd_intro的site_list中，在则直接return，不在则后续操作
-		site_sql = """select site_list from bd_intro_bj where id = %s"""
-		self.cursor.execute(site_sql, id)
-		result = self.cursor.fetchone()
+		site_sql = """select site_list from bd_intro_bj_copy where id = %s"""
+		self.cursor1.execute(site_sql, id)
+		result = self.cursor1.fetchone()
 		if result:
 			if site in result[0]:
 				return
 
 		# 取出此site的xpath，mysql中有此site的xpath，但是没有取到会跳过此site
 		xpath_sql = """select xpath from bd_intro_xpath where site = %s"""
-		self.cursor.execute(xpath_sql, site)
-		result = self.cursor.fetchone()
+		self.cursor1.execute(xpath_sql, site)
+		result = self.cursor1.fetchone()
 		if not result:
 			return
 		xpath = result[0]

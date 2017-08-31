@@ -28,7 +28,7 @@ class GetDesScrapySpider(scrapy.Spider):
 
 	def __init__(self):
 		# self.conn = pymysql.connect(host='127.0.0.1', user='root', passwd='3646287', db='spiders', charset="utf8", use_unicode=True)
-		self.conn = pymysql.connect(host='101.200.166.12', user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
+		self.conn = pymysql.connect(host='etl2.innotree.org', port=3308, user='spider', passwd='spider', db='spider', charset="utf8", use_unicode=True)
 		self.cursor = self.conn.cursor()
 
 	def start_requests(self):
